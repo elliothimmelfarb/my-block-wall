@@ -24,12 +24,23 @@ describe('MyBlockWall', () => {
       const givenPermission = await myBlockWall
         .connect(acc1)
         .viewGivenPermission()
+
       const hasPermissionFrom = await myBlockWall
         .connect(acc2)
         .viewHasPermissionFrom()
 
       expect(givenPermission).to.include(acc2.address)
       expect(hasPermissionFrom).to.include(acc1.address)
+    })
+
+    it('emits an event', async () => {
+      const { myBlockWall, acc1, acc2 } = await loadFixture(
+        deployAndGetAccounts,
+      )
+
+      await expect(await myBlockWall.connect(acc1).givePermission(acc2.address))
+        .to.emit(myBlockWall, 'PermissionGiven')
+        .withArgs(acc1.address, acc2.address)
     })
   })
 })

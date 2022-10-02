@@ -12,6 +12,8 @@ contract MyBlockWall {
   /// track addresses that have given this address permission
   mapping (address => address[]) private hasPermissionFrom;
 
+  event PermissionGiven(address indexed from, address indexed to);
+
   function viewGivenPermission() public view returns(address[] memory) {
     return givenPermission[msg.sender];
   }
@@ -23,5 +25,6 @@ contract MyBlockWall {
   function givePermission(address target) public {
     givenPermission[msg.sender].push(target);
     hasPermissionFrom[target].push(msg.sender);
+    emit PermissionGiven(msg.sender, target);
   }
 }
