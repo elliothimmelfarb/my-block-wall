@@ -43,4 +43,38 @@ describe('MyBlockWall', () => {
         .withArgs(acc1.address, acc2.address)
     })
   })
+
+  describe('posting to a wall', () => {
+    it('emits a post event', async () => {
+      const { myBlockWall, acc1, acc2 } = await loadFixture(
+        deployAndGetAccounts,
+      )
+
+      await myBlockWall.connect(acc1).givePermission(acc2.address)
+
+      const message = 'here is my message.'
+      const signature = 'me'
+
+      await expect(
+        await myBlockWall
+          .connect(acc2)
+          .postToWall(acc1.address, message, signature),
+      )
+        .to.emit(myBlockWall, 'Post')
+        .withArgs(acc2.address, acc1.address, message, signature)
+    })
+
+    it('reverts if user does not have permission', async () => {
+      const { myBlockWall, acc1, acc2 } = await loadFixture(
+        deployAndGetAccounts,
+      )
+
+      const message = 'here is my message.'
+      const signature = 'me'
+
+      await expect(
+        myBlockWall.connect(acc2).postToWall(acc1.address, message, signature),
+      ).to.be.revertedWith("You don't have permission.")
+    })
+  })
 })
