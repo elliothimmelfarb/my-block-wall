@@ -19,15 +19,15 @@ describe('MyBlockWall', () => {
         deployAndGetAccounts,
       )
 
-      await myBlockWall.connect(acc1).givePermission(acc2.address)
+      await myBlockWall.connect(acc1).grantPermission(acc2.address)
 
       const givenPermission = await myBlockWall
         .connect(acc1)
-        .viewPermissionsGivenBySender()
+        .viewSendersPermissionsGiven()
 
       const hasPermissionFrom = await myBlockWall
         .connect(acc2)
-        .viewPermissionsReceivedBySender()
+        .viewSendersPermissionsReceived()
 
       expect(givenPermission).to.include(acc2.address)
       expect(hasPermissionFrom).to.include(acc1.address)
@@ -38,9 +38,23 @@ describe('MyBlockWall', () => {
         deployAndGetAccounts,
       )
 
-      await expect(await myBlockWall.connect(acc1).givePermission(acc2.address))
-        .to.emit(myBlockWall, 'PermissionGiven')
+      await expect(
+        await myBlockWall.connect(acc1).grantPermission(acc2.address),
+      )
+        .to.emit(myBlockWall, 'PermissionGranted')
         .withArgs(acc1.address, acc2.address)
+    })
+
+    it('reverts if permission has already been given', async () => {
+      const { myBlockWall, acc1, acc2 } = await loadFixture(
+        deployAndGetAccounts,
+      )
+
+      await myBlockWall.connect(acc1).grantPermission(acc2.address)
+
+      await expect(
+        myBlockWall.connect(acc1).grantPermission(acc2.address),
+      ).to.be.revertedWith('Permission is already granted.')
     })
   })
 
@@ -50,7 +64,7 @@ describe('MyBlockWall', () => {
         deployAndGetAccounts,
       )
 
-      await myBlockWall.connect(acc1).givePermission(acc2.address)
+      await myBlockWall.connect(acc1).grantPermission(acc2.address)
 
       const message = 'here is my message.'
       const signature = 'me'
