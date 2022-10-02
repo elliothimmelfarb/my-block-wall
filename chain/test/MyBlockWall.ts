@@ -1,5 +1,4 @@
-import { time, loadFixture } from '@nomicfoundation/hardhat-network-helpers'
-import { anyValue } from '@nomicfoundation/hardhat-chai-matchers/withArgs'
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers'
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 
@@ -23,11 +22,11 @@ describe('MyBlockWall', () => {
 
       const givenPermission = await myBlockWall
         .connect(acc1)
-        .viewSendersPermissionsGiven()
+        .viewGrantedPermissions()
 
       const hasPermissionFrom = await myBlockWall
         .connect(acc2)
-        .viewSendersPermissionsReceived()
+        .viewReceivedPermissions()
 
       expect(givenPermission).to.include(acc2.address)
       expect(hasPermissionFrom).to.include(acc1.address)
@@ -58,6 +57,32 @@ describe('MyBlockWall', () => {
     })
   })
 
+  describe('nicknames', () => {
+    it('setting reverts if permission has not been granted', async () => {
+      const { myBlockWall, acc1, acc2 } = await loadFixture(
+        deployAndGetAccounts,
+      )
+
+      await expect(
+        myBlockWall.connect(acc1).setNickName(acc2.address, 'my friend'),
+      ).to.be.revertedWith('Grant permission before setting nicknames.')
+    })
+
+    it('can be set if permission is granted', async () => {
+      const { myBlockWall, acc1, acc2 } = await loadFixture(
+        deployAndGetAccounts,
+      )
+
+      await myBlockWall.connect(acc1).grantPermission(acc2.address)
+
+      await myBlockWall.connect(acc1).setNickName(acc2.address, 'my friend')
+
+      await expect(
+        await myBlockWall.connect(acc1).viewNickName(acc2.address),
+      ).to.equal('my friend')
+    })
+  })
+
   describe('posting to a wall', () => {
     it('emits a post event', async () => {
       const { myBlockWall, acc1, acc2 } = await loadFixture(
@@ -67,15 +92,12 @@ describe('MyBlockWall', () => {
       await myBlockWall.connect(acc1).grantPermission(acc2.address)
 
       const message = 'here is my message.'
-      const signature = 'me'
 
       await expect(
-        await myBlockWall
-          .connect(acc2)
-          .postToWall(acc1.address, message, signature),
+        await myBlockWall.connect(acc2).postToWall(acc1.address, message),
       )
         .to.emit(myBlockWall, 'Post')
-        .withArgs(acc2.address, acc1.address, message, signature)
+        .withArgs(acc2.address, acc1.address, message)
     })
 
     it('reverts if user does not have permission', async () => {
@@ -84,10 +106,9 @@ describe('MyBlockWall', () => {
       )
 
       const message = 'here is my message.'
-      const signature = 'me'
 
       await expect(
-        myBlockWall.connect(acc2).postToWall(acc1.address, message, signature),
+        myBlockWall.connect(acc2).postToWall(acc1.address, message),
       ).to.be.revertedWith("You don't have permission.")
     })
   })
