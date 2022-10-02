@@ -23,11 +23,11 @@ describe('MyBlockWall', () => {
 
       const givenPermission = await myBlockWall
         .connect(acc1)
-        .viewGivenPermission()
+        .viewPermissionsGivenBySender()
 
       const hasPermissionFrom = await myBlockWall
         .connect(acc2)
-        .viewHasPermissionFrom()
+        .viewPermissionsReceivedBySender()
 
       expect(givenPermission).to.include(acc2.address)
       expect(hasPermissionFrom).to.include(acc1.address)
