@@ -1,38 +1,61 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-// Uncomment this line to use console.log
-// import "hardhat/console.sol";
-
-/// Post on people's walls and give/receive permission
-/// to do so.
+/** 
+ * @title MyBlockWall
+ * Post on people's walls (think basic facebook wall) and 
+ * give/receive permission to do so.
+ * Users can see lists of who they have granted permission to
+ * and who has granted them permissions. Users can assign
+ * nicknames to users they have granted permission to.
+ * Lists and relationships are locked down to only be viewable
+ * by those users who have direct permission relationships with
+ * eachother.
+*/
 contract MyBlockWall {
-  /// track a list of addresses that an address has granted permission to
+  /**
+   * @dev track a list of addresses that an address has granted permission to
+   */
   mapping (address => address[]) private grantedPermissionsByAddress;
 
-  /// track a list of addresses that an address has received permission from
+  /**
+   * @dev track a list of addresses that an address has received permission from
+   */
   mapping (address => address[]) private receivedPermissionsByAddress;
 
-  /// track nicknames
+  /**
+   * @dev track nicknames
+   */
   mapping (address => mapping (address => string)) private nickNamesByAddress;
 
-  /// a user gives permission to another user to post on their wall
+  /**
+   * @dev a user gives permission to another user to post on their wall
+   */
   event PermissionGranted(address indexed from, address indexed to);
 
-  /// a user makes a post on another user's wall
+  /**
+   * @dev a user makes a post on another user's wall
+   */
   event Post(address indexed from, address indexed to, string message);
 
-  /// only a sender is allowed to see who they have given permissions to
+  /**
+   * @dev only a sender is allowed to see who they have given permissions to
+   */
   function viewGrantedPermissions() public view returns(address[] memory) {
     return grantedPermissionsByAddress[msg.sender];
   }
 
-  /// only a sender is allowed to see who they have received permissions from
+  /**
+   * @dev only a sender is allowed to see who they have received permissions from
+   */
   function viewReceivedPermissions() public view returns (address[] memory) {
     return receivedPermissionsByAddress[msg.sender];
   }
 
-  /// check if permission has been granted by "from" address to "to" address
+  /** 
+   * @dev check if permission has been granted by "from" address to "to" address.
+   * @dev internal so it cannot be called from the outside 
+   */
   function isPermissionGranted(address from, address to) internal view returns (bool) {
     address[] memory permittedAccounts = grantedPermissionsByAddress[from];
 
@@ -42,23 +65,31 @@ contract MyBlockWall {
       }
     }
 
-    /// permission is not granted
+    // permission is not granted
     return false;
   }
 
+  /**
+   * @dev only a user can view the nickname they've given to another user
+   */
   function viewNickName(address target) public view returns (string memory) {
     require(isPermissionGranted(msg.sender, target), 'Grant permission before viewing nicknames.');
 
     return nickNamesByAddress[msg.sender][target];
   }
 
+  /**
+   * @dev Set a nickname for a user that has permission to post on your wall
+   */
   function setNickName(address target, string calldata newName) public {
     require(isPermissionGranted(msg.sender, target), 'Grant permission before setting nicknames.');
 
     nickNamesByAddress[msg.sender][target] = newName;
   }
 
-  /// grant permission. Permission can only be granted by sender.
+  /**
+   * @dev grant permission. Permission can only be granted by sender.
+   */
   function grantPermission(address target) public {
     require(!isPermissionGranted(msg.sender, target), "Permission is already granted.");
 
@@ -69,7 +100,9 @@ contract MyBlockWall {
     emit PermissionGranted(msg.sender, target);
   }
 
-  /// only a sender can post to a wall that they have permission for
+  /** 
+   * @dev only a sender can post to a wall that they have permission for
+   */
   function postToWall(address target, string calldata message) public {
     require(isPermissionGranted(target, msg.sender), "You don't have permission.");
 
