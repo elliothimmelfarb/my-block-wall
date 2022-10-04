@@ -1,7 +1,13 @@
 {
+  "scripts": {
+    "test": "npx hardhat test",
+    "trace": "npx hardhat test --trace",
+    "fulltrace": "npx hardhat test --fulltrace"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
     "hardhat": "^2.11.2",
-    "hardhat-gas-reporter": "^1.0.9"
+    "hardhat-gas-reporter": "^1.0.9",
+    "hardhat-tracer": "^1.1.0-rc.9"
   }
 }
