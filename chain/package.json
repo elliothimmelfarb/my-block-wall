@@ -1,8 +1,9 @@
 {
   "scripts": {
+    "coverage": "npx hardhat coverage",
+    "fulltrace": "npx hardhat test --fulltrace",
     "test": "npx hardhat test",
-    "trace": "npx hardhat test --trace",
-    "fulltrace": "npx hardhat test --fulltrace"
+    "trace": "npx hardhat test --trace"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
