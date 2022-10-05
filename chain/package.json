@@ -8,7 +8,6 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
     "hardhat": "^2.11.2",
-    "hardhat-gas-reporter": "^1.0.9",
     "hardhat-tracer": "^1.1.0-rc.9"
   }
 }
