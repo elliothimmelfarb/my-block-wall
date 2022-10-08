@@ -125,5 +125,19 @@ describe('MyBlockWall', () => {
         myBlockWall.connect(acc2).postToWall(acc1.address, message),
       ).to.be.revertedWith("You don't have permission.")
     })
+
+    it('reverts if the message is longer than 100 chars', async () => {
+      const { myBlockWall, acc1, acc2 } = await loadFixture(
+        deployAndGetAccounts,
+      )
+
+      await myBlockWall.connect(acc1).grantPermission(acc2.address)
+
+      const longMessage = new Array(101).fill('c').join('')
+
+      await expect(
+        myBlockWall.connect(acc2).postToWall(acc1.address, longMessage),
+      ).to.be.revertedWith('Message must be less than 101 character.')
+    })
   })
 })

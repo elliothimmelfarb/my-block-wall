@@ -72,13 +72,13 @@ contract MyBlockWall {
      */
     function setNickName(address target, string calldata newName) public {
         require(
-            bytes(newName).length < 16,
-            "Nickname must be less than 16 characters."
+            isPermissionGranted(msg.sender, target),
+            "Grant permission before setting nicknames."
         );
 
         require(
-            isPermissionGranted(msg.sender, target),
-            "Grant permission before setting nicknames."
+            bytes(newName).length < 16,
+            "Nickname must be less than 16 characters."
         );
 
         nickNamesByAddress[msg.sender][target] = newName;
@@ -107,6 +107,11 @@ contract MyBlockWall {
         require(
             isPermissionGranted(target, msg.sender),
             "You don't have permission."
+        );
+
+        require(
+            bytes(message).length < 101,
+            "Message must be less than 101 character."
         );
 
         emit Post(msg.sender, target, message);
