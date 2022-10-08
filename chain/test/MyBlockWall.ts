@@ -81,6 +81,20 @@ describe('MyBlockWall', () => {
         await myBlockWall.connect(acc1).viewNickName(acc2.address),
       ).to.equal('my friend')
     })
+
+    it('reverts if the nickname is longer than 15 chars', async () => {
+      const { myBlockWall, acc1, acc2 } = await loadFixture(
+        deployAndGetAccounts,
+      )
+
+      await myBlockWall.connect(acc1).grantPermission(acc2.address)
+
+      const longNickname = new Array(16).fill('c').join('')
+
+      await expect(
+        myBlockWall.connect(acc1).setNickName(acc2.address, longNickname),
+      ).to.be.revertedWith('Nickname must be less than 16 characters.')
+    })
   })
 
   describe('posting to a wall', () => {

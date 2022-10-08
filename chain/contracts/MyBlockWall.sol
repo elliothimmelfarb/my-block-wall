@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+// Uncomment this line to use console.log
+import "hardhat/console.sol";
+
 /**
  * @title MyBlockWall
  * Post on people's walls (think basic facebook wall) and
@@ -68,6 +71,11 @@ contract MyBlockWall {
      * @dev Set a nickname for a user that has permission to post on your wall
      */
     function setNickName(address target, string calldata newName) public {
+        require(
+            bytes(newName).length < 16,
+            "Nickname must be less than 16 characters."
+        );
+
         require(
             isPermissionGranted(msg.sender, target),
             "Grant permission before setting nicknames."
