@@ -1,13 +1,20 @@
+import { useMetaMask } from 'metamask-react'
 import { Router, Route } from 'preact-router'
 import { Home } from './views/home/Home'
 import { NotConnected } from './views/notConnected/NotConnected'
 
 export function App() {
-  const isConnected = true
+  const { status } = useMetaMask()
 
   return (
-    <Router>
-      <Route path='/' component={isConnected ? Home : NotConnected} />
-    </Router>
+    <>
+      {status === 'connected' ? (
+        <Router>
+          <Route path='/' component={Home} />
+        </Router>
+      ) : (
+        <NotConnected />
+      )}
+    </>
   )
 }
