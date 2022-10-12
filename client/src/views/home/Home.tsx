@@ -1,9 +1,13 @@
-import { Flex, Heading } from '@chakra-ui/react'
+import { Container, Flex, Heading, Stack } from '@chakra-ui/react'
+import { useMetaMask } from 'metamask-react'
 
 export const Home = () => {
+  const { account } = useMetaMask()
+
   return (
-    <Flex width='100%'>
+    <Container maxW='5xl' width='100%' direction='column' align='center'>
       <Heading>Home</Heading>
-    </Flex>
+      <Heading>{account}</Heading>
+    </Container>
   )
 }

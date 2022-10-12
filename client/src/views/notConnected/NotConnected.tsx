@@ -5,7 +5,7 @@ export const NotConnected = () => {
   const { connect } = useMetaMask()
 
   return (
-    <Flex width='100%'>
+    <Flex width='100%' direction='column'>
       <Heading>Not Connected</Heading>
       <Button onClick={connect}>Connect to MetaMask</Button>
     </Flex>
