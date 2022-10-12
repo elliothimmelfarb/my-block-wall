@@ -1,5 +1,6 @@
 import { Center, Container, Heading } from '@chakra-ui/react'
 import { useMetaMask } from 'metamask-react'
+import { GivePermission } from './GivePermission'
 
 export const Home = () => {
   const { account } = useMetaMask()
@@ -11,7 +12,7 @@ export const Home = () => {
       <Heading>This is your account:</Heading>
       <Heading>{account}</Heading>
 
-      <Center>Give Permission to Account</Center>
+      <GivePermission />
       <Center>Accounts you have permission from</Center>
       <Center>Accounts you have given permission to</Center>
       <Center>Your Wall</Center>
